@@ -47,6 +47,8 @@
         </div>
     </nav>
 
+
+
     <div class="container pt-4">
     
         <table class="table">
@@ -62,7 +64,15 @@
             <tbody>
                 @foreach ($libros as $libro)                   
                     <tr>
-                        <th></th>
+                        <td>
+                            <form action="{{ route('libro.destroy', $libro->id) }}" method="POST" style="display: inline;">
+                                @csrf
+                                @method('DELETE')
+                                <button type="submit" class="btn btn-danger mx-2" onclick="return confirm('¿Seguro que quieres eliminar este libro?')">Eliminar</button>
+                            </form>
+                            <a href="{{ route('libro.edit', $libro->id) }}" class="btn btn-success mx-2">Modificar</a>
+                            <a href="{{ route('libro.show', $libro->id) }}" class="btn btn-primary mx-2">Ver</a>
+                        </td>
                         <td>{{ $libro->titulo }}</td>
                         <td>{{ $libro->autor }}</td>
                         <td>{{ $libro->genero }}</td>

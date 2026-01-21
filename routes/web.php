@@ -60,3 +60,8 @@ Route::get('/usuario/store', [UsuarioController::class, 'store'])->name('usuario
 Route::get('/libro', [LibroController::class, 'index'])->name('libro.index');
 Route::get('/libro/alta', [LibroController::class, 'create'])->name('libro.create');
 Route::post('/libro/alta', [LibroController::class, 'create'])->name('libro.create');
+
+Route::get('/libro/{id}', [LibroController::class, 'show'])->name('libro.show');
+Route::get('/libro/{id}/edit', [LibroController::class, 'edit'])->name('libro.edit');
+Route::put('/libro/{id}', [LibroController::class, 'update'])->name('libro.update');
+Route::delete('/libro/{id}', [LibroController::class, 'destroy'])->name('libro.destroy');

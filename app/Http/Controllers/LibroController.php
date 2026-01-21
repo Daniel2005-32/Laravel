@@ -67,7 +67,8 @@ class LibroController extends Controller
      */
     public function show(string $id)
     {
-        //
+        $libro = Libro::findOrFail($id);
+        return view('libros.show', compact('libro'));
     }
 
     /**
@@ -75,7 +76,8 @@ class LibroController extends Controller
      */
     public function edit(string $id)
     {
-        //
+        $libro = Libro::findOrFail($id);
+        return view('libros.edit', compact('libro'));
     }
 
     /**
@@ -83,7 +85,24 @@ class LibroController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        //
+        $validated = $request->validate([
+            'titulo'      => 'required|string|max:255',
+            'autor'       => 'required|string|max:255',
+            'anho'        => 'required|integer',
+            'genero'      => 'required|string|max:255',
+            'descripcion' => 'required|string|max:1255',
+        ]);
+
+        $libro = Libro::findOrFail($id);
+        $libro->titulo      = $request->input('titulo');
+        $libro->autor       = $request->input('autor');
+        $libro->anho        = $request->input('anho');
+        $libro->genero      = $request->input('genero');
+        $libro->descripcion = $request->input('descripcion');
+        $libro->save();
+
+        return redirect()->route('libro.index')
+            ->with('success', 'Libro actualizado correctamente');
     }
 
     /**
@@ -91,6 +110,10 @@ class LibroController extends Controller
      */
     public function destroy(string $id)
     {
-        //
+        $libro = Libro::findOrFail($id);
+        $libro->delete();
+
+        return redirect()->route('libro.index')
+            ->with('success', 'Libro eliminado correctamente');
     }
 }
