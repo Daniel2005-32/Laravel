@@ -7,6 +7,8 @@
 
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" integrity="sha384-tViUnnbYAV00FLIhhi3v/dWt3Jxw4gZQcNoSCxCIFNJVCx7/D55/wXsrNIRANwdD" crossorigin="anonymous">
 </head>
 <body>
 
@@ -54,6 +56,14 @@
     </div>
     @endif
 
+    @if(session('success'))
+    <div class="container pt-4">
+        <div class="alert alert-success">
+            {{ session('success') }}
+        </div>
+    </div>
+    @endif
+
 
 
     <div class="container pt-4">
@@ -72,17 +82,17 @@
                 @foreach ($libros as $libro)                   
                     <tr>
                         <td>
+                            <a href="/libro/show/{{ $libro->id }}" class="btn btn-primary"><i class="bi bi-search"></i></a>
+                            <a href="/libro/edit/{{ $libro->id }}" class="btn btn-success"><i class="bi bi-pencil-square"></i></a>
                             <form action="{{ route('libro.destroy', $libro->id) }}" method="POST" style="display: inline;">
                                 @csrf
                                 @method('DELETE')
-                                <button type="submit" class="btn btn-danger mx-2" onclick="return confirm('¿Seguro que quieres eliminar este libro?')">Eliminar</button>
+                                <button type="submit" class="btn btn-danger mx-2" onclick="return confirm('¿Seguro que quieres eliminar este libro?')"><i class="bi bi-trash-fill"></i></button>
                             </form>
-                            <a href="{{ route('libro.edit', $libro->id) }}" class="btn btn-success mx-2">Modificar</a>
-                            <a href="{{ route('libro.show', $libro->id) }}" class="btn btn-primary mx-2">Ver</a>
                         </td>
                         <td>{{ $libro->titulo }}</td>
                         <td>{{ $libro->autor }}</td>
-                        <td>{{ $libro->genero }}</td>
+                        <td>{{ $cods_genero[$libro->genero]}}</td>
                         <td>{{ $libro->anho }}</td>
                     </tr>
                 @endforeach

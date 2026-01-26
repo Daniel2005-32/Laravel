@@ -15,12 +15,14 @@ class LibroController extends Controller
     {
         $libros = Libro::all();
 
-        return view('libros.index',['libros' => $libros]);
+        return view('libros.index',['libros' => $libros,'cods_genero' => Libro::$cods_genero]);
     }
 
     /**
      * Show the form for creating a new resource.
      */
+    // En el método create(), modifica la parte cuando se procesa el POST:
+
     public function create(Request $request)
     {
         $data = ['exito' =>''];
@@ -37,21 +39,28 @@ class LibroController extends Controller
 
             $libro = new Libro();
 
-            
-            $libro->titulo      = $request->input('titulo');;
-            $libro->autor       = $request->input('autor');;
-            $libro->anho        = $request->input('anho');;
-            $libro->genero      = $request->input('genero');;
+            $libro->titulo      = $request->input('titulo');
+            $libro->autor       = $request->input('autor');
+            $libro->anho        = $request->input('anho');
+            $libro->genero      = $request->input('genero');
             $libro->descripcion = $request->input('descripcion');
 
             $libro->save();   
             
-            $data['exito'] = 'Operación realiza correctamente';
-
+            // CAMBIO: Redirigir al listado de libros con mensaje de éxito
+            return redirect()->route('libro.index')
+                ->with('success', 'Libro creado correctamente');
         }
 
+        $libro = new Libro();
 
-        return view('libros.create',['datos' => $data]);
+        return view('libros.create',[
+            'datos' => $data,
+            'libro' => $libro,
+            'cods_genero' => Libro::$cods_genero, 
+            'disabled' => '',
+            'oper' => 'create'
+        ]);
     }
 
     /**
@@ -67,17 +76,62 @@ class LibroController extends Controller
      */
     public function show(string $id)
     {
-        $libro = Libro::findOrFail($id);
-        return view('libros.show', compact('libro'));
+        $datos = ['exito' => ''];
+        $libro = Libro::find($id);
+
+        return view('libros.create',['libro' => $libro,'datos' => $datos,'cods_genero' => Libro::$cods_genero, 'disabled' => 'disabled','oper' => 'show']);
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(string $id)
+
+
+    public function edit(Request $request, string $id='')
     {
-        $libro = Libro::findOrFail($id);
-        return view('libros.edit', compact('libro'));
+        if ($request->isMethod('post')) {   
+
+            $validated = $request->validate([
+                'titulo'      => 'required|string|max:255',
+                'autor'       => 'required|string|max:255',
+                'anho'        => 'required|integer',
+                'genero'      => 'required|string|max:255',
+                'descripcion' => 'required|string|max:1255',
+            ]);
+
+            $datos_save = [];
+            
+            $datos_save['titulo']       = $request->input('titulo');
+            $datos_save['autor']        = $request->input('autor');
+            $datos_save['anho']         = $request->input('anho');
+            $datos_save['genero']       = $request->input('genero');
+            $datos_save['descripcion']  = $request->input('descripcion');
+
+            Libro::where('id', $request->input('id'))->update($datos_save);
+            
+            // CAMBIO: Obtener el libro actualizado y mostrar vista de consulta
+            $libro = Libro::find($request->input('id'));
+            $datos['exito'] = 'Libro actualizado correctamente';
+            
+            // Mostrar la vista de create pero con campos deshabilitados (modo consulta)
+            return view('libros.create',[
+                'libro' => $libro,
+                'datos' => $datos,
+                'cods_genero' => Libro::$cods_genero, 
+                'disabled' => 'disabled', // Campos deshabilitados
+                'oper' => 'show' // Cambiar a modo show/consulta
+            ]);
+        }
+        else
+        {
+            $datos = ['exito' => ''];
+            $libro = Libro::find($id);
+            
+            return view('libros.create',[
+                'libro' => $libro,
+                'datos' => $datos,
+                'cods_genero' => Libro::$cods_genero, 
+                'disabled' => '', // Campos habilitados para edición
+                'oper' => 'edit'
+            ]);
+        }
     }
 
     /**
