@@ -1,4 +1,3 @@
-
 <?php
 
 use Illuminate\Support\Facades\Route;
@@ -13,7 +12,7 @@ use App\Http\Controllers\LibroController;
 
 Route::get('/', function () {
 
-    return view('Hola');
+    return view('welcome');
 });
 
 
@@ -68,5 +67,4 @@ Route::get('/libro/show/{i}', [LibroController::class, 'show'])->name('libro.sho
 
 
 Route::get('/libro/destroy/{i}', [LibroController::class, 'destroy'])->name('libro.destroy');
-Route::post('/libro/destroy/{i}', [LibroController::class, 'destroy'])->name('libro.destroy');
-Route::delete('/libro/destroy/{i}', [LibroController::class, 'destroy'])->name('libro.destroy');
+Route::post('/libro/destroy', [LibroController::class, 'destroy'])->name('libro.destroy');
