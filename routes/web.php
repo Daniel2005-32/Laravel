@@ -13,7 +13,7 @@ use App\Http\Controllers\LibroController;
 
 Route::get('/', function () {
 
-    return view('welcome');
+    return view('Hola');
 });
 
 

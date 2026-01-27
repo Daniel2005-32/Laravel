@@ -13,7 +13,7 @@ class LibroController extends Controller
      */
     public function index()
     {
-        $libros = Libro::all();
+        $libros = Libro::paginate(10);
 
         return view('libros.index',['libros' => $libros,'cods_genero' => Libro::$cods_genero]);
     }

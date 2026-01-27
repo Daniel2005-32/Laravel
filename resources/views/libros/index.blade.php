@@ -102,6 +102,10 @@
             </tbody>
         </table>
 
+        <div class="d-flex justify-content-center mt-4">
+            {{ $libros->links() }}
+        </div>
+
         <a class="btn btn-primary" href="{{ route('libro.create') }}">Nuevo Libro</a>
 
     
