@@ -1,1 +1,0 @@
-welcome<?php /**PATH /var/www/html/cifpzonzamas.lan/resources/views/welcome.blade.php ENDPATH**/ ?>

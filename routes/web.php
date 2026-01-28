@@ -8,35 +8,24 @@ use App\Http\Controllers\Datos;
 use App\Http\Controllers\UsuarioController;
 use App\Http\Controllers\LibroController;
 
+Route::view('/', 'welcome');
 
+Route::view('dashboard', 'dashboard')
+    ->middleware(['auth', 'verified'])
+    ->name('dashboard');
 
-Route::get('/', function () {
+Route::view('profile', 'profile')
+    ->middleware(['auth'])
+    ->name('profile');
 
-    return view('welcome');
-});
-
-
-Route::get('/login', function () {
-
-    return view('welcome');
-})->name('login');
-
-
-
-Route::get('/contacto', function () {
-
-    return "Página de contacto";
-})->name('contacto');
+require __DIR__.'/auth.php';
 
 
 Route::middleware(['auth'])->group(function () {
-    Route::get('/admin/usuarios', function () {
+    Route::get('/admin', function () {
     // Tu lógica aquí
     });
 
-    Route::get('/admin/configuracion ', function () {
-    // Tu lógica aquí
-    });
 });
 
 
@@ -68,3 +57,4 @@ Route::get('/libro/show/{i}', [LibroController::class, 'show'])->name('libro.sho
 
 Route::get('/libro/destroy/{i}', [LibroController::class, 'destroy'])->name('libro.destroy');
 Route::post('/libro/destroy', [LibroController::class, 'destroy'])->name('libro.destroy');
+

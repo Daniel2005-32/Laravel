@@ -24,13 +24,18 @@
     20 => 'Illuminate\\Translation\\TranslationServiceProvider',
     21 => 'Illuminate\\Validation\\ValidationServiceProvider',
     22 => 'Illuminate\\View\\ViewServiceProvider',
-    23 => 'Laravel\\Pail\\PailServiceProvider',
-    24 => 'Laravel\\Sail\\SailServiceProvider',
-    25 => 'Laravel\\Tinker\\TinkerServiceProvider',
-    26 => 'Carbon\\Laravel\\ServiceProvider',
-    27 => 'NunoMaduro\\Collision\\Adapters\\Laravel\\CollisionServiceProvider',
-    28 => 'Termwind\\Laravel\\TermwindServiceProvider',
-    29 => 'App\\Providers\\AppServiceProvider',
+    23 => 'Laravel\\Breeze\\BreezeServiceProvider',
+    24 => 'Laravel\\Pail\\PailServiceProvider',
+    25 => 'Laravel\\Sail\\SailServiceProvider',
+    26 => 'Laravel\\Tinker\\TinkerServiceProvider',
+    27 => 'Livewire\\LivewireServiceProvider',
+    28 => 'Livewire\\Volt\\VoltServiceProvider',
+    29 => 'Carbon\\Laravel\\ServiceProvider',
+    30 => 'NunoMaduro\\Collision\\Adapters\\Laravel\\CollisionServiceProvider',
+    31 => 'Termwind\\Laravel\\TermwindServiceProvider',
+    32 => 'Spatie\\Permission\\PermissionServiceProvider',
+    33 => 'App\\Providers\\AppServiceProvider',
+    34 => 'App\\Providers\\VoltServiceProvider',
   ),
   'eager' => 
   array (
@@ -45,10 +50,14 @@
     8 => 'Illuminate\\Session\\SessionServiceProvider',
     9 => 'Illuminate\\View\\ViewServiceProvider',
     10 => 'Laravel\\Pail\\PailServiceProvider',
-    11 => 'Carbon\\Laravel\\ServiceProvider',
-    12 => 'NunoMaduro\\Collision\\Adapters\\Laravel\\CollisionServiceProvider',
-    13 => 'Termwind\\Laravel\\TermwindServiceProvider',
-    14 => 'App\\Providers\\AppServiceProvider',
+    11 => 'Livewire\\LivewireServiceProvider',
+    12 => 'Livewire\\Volt\\VoltServiceProvider',
+    13 => 'Carbon\\Laravel\\ServiceProvider',
+    14 => 'NunoMaduro\\Collision\\Adapters\\Laravel\\CollisionServiceProvider',
+    15 => 'Termwind\\Laravel\\TermwindServiceProvider',
+    16 => 'Spatie\\Permission\\PermissionServiceProvider',
+    17 => 'App\\Providers\\AppServiceProvider',
+    18 => 'App\\Providers\\VoltServiceProvider',
   ),
   'deferred' => 
   array (
@@ -206,6 +215,7 @@
     'validator' => 'Illuminate\\Validation\\ValidationServiceProvider',
     'validation.presence' => 'Illuminate\\Validation\\ValidationServiceProvider',
     'Illuminate\\Contracts\\Validation\\UncompromisedVerifier' => 'Illuminate\\Validation\\ValidationServiceProvider',
+    'Laravel\\Breeze\\Console\\InstallCommand' => 'Laravel\\Breeze\\BreezeServiceProvider',
     'Laravel\\Sail\\Console\\InstallCommand' => 'Laravel\\Sail\\SailServiceProvider',
     'Laravel\\Sail\\Console\\PublishCommand' => 'Laravel\\Sail\\SailServiceProvider',
     'command.tinker' => 'Laravel\\Tinker\\TinkerServiceProvider',
@@ -249,6 +259,9 @@
     array (
     ),
     'Illuminate\\Validation\\ValidationServiceProvider' => 
+    array (
+    ),
+    'Laravel\\Breeze\\BreezeServiceProvider' => 
     array (
     ),
     'Laravel\\Sail\\SailServiceProvider' => 
