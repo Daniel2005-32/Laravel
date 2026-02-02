@@ -17,7 +17,17 @@
 
 
 
-    <form action="/libro/{{ $oper }}" method="POST">
+    @php
+        $route = match($oper) {
+            'create' => route('libro.create'),
+            'edit' => route('libro.edit', ['id' => $libro->id]),
+            'destroy' => route('libro.destroy', ['id' => $libro->id]),
+            'show' => '', 
+            default => '',
+        };
+    @endphp
+
+    <form action="{{ $route }}" method="POST">
 
         @csrf
 

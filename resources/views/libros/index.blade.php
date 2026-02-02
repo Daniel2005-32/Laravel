@@ -21,14 +21,14 @@
 
                 <tr>
                     <th>
-                        <a href="/libro/show/{{ $libro->id }}" class="btn btn-primary"><i class="bi bi-search"></i></a>
-                        <a href="/libro/edit/{{ $libro->id }}" class="btn btn-success"><i class="bi bi-pencil-square"></i></a>
-                        <a href="/libro/destroy/{{ $libro->id }}" class="btn btn-danger"><i class="bi bi-trash"></i></a>
+                        <a href="{{ route('libro.show', $libro->id) }}" class="btn btn-primary"><i class="bi bi-search"></i></a>
+                        <a href="{{ route('libro.edit', $libro->id) }}" class="btn btn-success"><i class="bi bi-pencil-square"></i></a>
+                        <a href="{{ route('libro.destroy', $libro->id) }}" class="btn btn-danger"><i class="bi bi-trash"></i></a>
 
                     </th>
                     <td>{{ $libro->titulo }}</td>
                     <td>{{ $libro->autor }}</td>
-                    <td>{{ $cods_genero[$libro->genero] }}</td>
+                    <td>{{ $cods_genero[$libro->genero] ?? $libro->genero }}</td>
                     <td>{{ $libro->anho }}</td>
                 </tr>
             @endforeach
