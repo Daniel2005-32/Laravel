@@ -1,3 +1,36 @@
+Informacion importante:
+sudo apt-get install composer
+# por si no funcinona ese, el comando de juanra- curl -sS https://getcomposer.org/installer | php
+sudo mv composer.phar /usr/local/bin/composer
+composer –version
+#VINCULAR AL REPOSITORIO DE JUANRA- git init- git remote add origin 
+git@github.com:arnauj/cifpzonzamas2dawlaravel2026.git- git pull origin master- composer update- sudo apt install software-properties-common -y
+sudo add-apt-repository ppa:ondrej/php -y
+sudo apt update
+sudo apt install php php-cli php-mbstring php-xml php-bcmath php
+curl
+php-zip unzip curl -y
+# mysql - sudo apt install mysql-server php-mysql -y- sudo mysql- CREATE DATABASE zonzamas;
+CREATE USER 'lanzarote'@'localhost' IDENTIFIED BY 'lanza.pass';
+GRANT ALL PRIVILEGES ON zonzamas.* TO 'lanzarote'@'localhost';
+FLUSH PRIVILEGES;
+EXIT;
+#comprobar
+mysql -u lanzarote -planza.pass
+# cambiar las cosas de .env.example
+cp .env.example .env
+php artisan key:generate- php artisan migrate
+#si hay problemas con php artisan migrate
+php artisan migrate:fresh –seed
+npm install
+# en los apuntes sale asi npm install && npm run dev pero bueno
+npm run build
+# y listo, suerte con el examen
+php artisan migrate:refresh --seed
+php artisan serve
+
+Intrucciones :
+
 1. Preparación del Sistema
 1.1 Actualizar Sistema Operativo
 bash
