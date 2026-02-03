@@ -1542,3 +1542,1596 @@ npm install axios sweetalert2
 npm run dev
 npm run watch  # Para desarrollo (recarga automática)
 
+
+
+Posibles errores a la hora de ejecucion:
+
+1. Verificar y reparar permisos
+bash
+# Ir al directorio del proyecto
+cd /var/www/html/cifpzonzamas.lan
+
+# Verificar permisos actuales
+ls -la
+
+# Dar permisos al directorio actual
+sudo chown -R $USER:$USER .
+sudo chmod -R 755 .
+2. Si usas Apache/Nginx (usuario www-data)
+bash
+# Dar permisos al usuario del servidor web
+sudo chown -R $USER:www-data .
+sudo chmod -R 775 .
+
+# O si necesitas usar www-data completamente
+sudo chown -R www-data:www-data .
+sudo chmod -R 775 .
+3. Alternativa: Usar Composer con sudo (no recomendado para producción)
+bash
+# Solo si es necesario temporalmente
+sudo composer install
+4. Verificar si el disco está lleno
+bash
+# Comprobar espacio en disco
+df -h
+
+# Verificar espacio en la partición
+df -h /var/www
+5. Comando específico para Laravel
+bash
+# Limpiar cache de Composer
+composer clear-cache
+
+# Intentar de nuevo
+composer install --no-scripts
+
+# Si sigue fallando, crear manualmente el directorio vendor
+mkdir -p vendor/composer
+chmod 755 vendor/composer
+6. Solución definitiva para entornos de desarrollo:
+bash
+# Asegurar todos los directorios necesarios
+sudo mkdir -p /var/www/html/cifpzonzamas.lan/vendor
+sudo chown -R $USER:$USER /var/www/html/cifpzonzamas.lan
+sudo chmod -R 755 /var/www/html/cifpzonzamas.lan
+
+# Luego ejecutar
+composer install
+7. Si trabajas con Docker:
+Asegúrate de que los volúmenes tienen los permisos correctos en docker-compose.yml:
+yaml
+volumes:
+  - ./:/var/www/html:cached
+Resumen rápido:
+Permisos incorrectos → Usa chown y chmod
+Usuario sin privilegios → Cambia propietario del directorio
+Espacio en disco lleno → Libera espacio
+Cache corrupta → composer clear-cache
+¿Estás usando algún entorno específico como Docker, Vagrant o un servidor compartido?
+# Solo si es necesario temporalmente
+sudo composer install
+Do not run Composer as root/super user! See https://getcomposer.org/root for details
+Continue as root/super user [yes]? yes
+Composer could not find a composer.json file in /var/www/html/cifpzonzamas.lan
+To initialize a project, please create a composer.json file. See https://getcomposer.org/basic-usage
+daniel@daniel-virtualbox:/var/www/html/cifpzonzamas.lan$
+Veo varios problemas. Vamos a solucionarlos paso a paso:
+1. Primero, verifica si tienes un proyecto Laravel
+bash
+# Ve al directorio
+cd /var/www/html/cifpzonzamas.lan
+
+# Lista los archivos para ver qué hay
+ls -la
+2. Opciones según lo que encuentres:
+Opción A: Si el directorio está vacío o no tiene composer.json
+Necesitas crear un nuevo proyecto Laravel:
+bash
+# Regresa al directorio padre
+cd /var/www/html
+
+# Si el directorio cifpzonzamas.lan está vacío, puedes eliminarlo o moverlo
+sudo rm -rf cifpzonzamas.lan  # CUIDADO: solo si no hay archivos importantes
+
+# Crear nuevo proyecto Laravel
+composer create-project laravel/laravel cifpzonzamas.lan
+Opción B: Si tienes archivos pero falta composer.json
+bash
+cd /var/www/html/cifpzonzamas.lan
+
+# Crear composer.json básico manualmente
+cat > composer.json << 'EOF'
+{
+    "name": "laravel/laravel",
+    "type": "project",
+    "description": "The Laravel Framework.",
+    "keywords": ["framework", "laravel"],
+    "license": "MIT",
+    "require": {
+        "php": "^8.1",
+        "laravel/framework": "^10.0"
+    },
+    "require-dev": {
+        "laravel/pint": "^1.0",
+        "laravel/sail": "^1.18",
+        "mockery/mockery": "^1.4.4",
+        "nunomaduro/collision": "^7.0",
+        "phpunit/phpunit": "^10.0"
+    },
+    "autoload": {
+        "psr-4": {
+            "App\\": "app/",
+            "Database\\Factories\\": "database/factories/",
+            "Database\\Seeders\\": "database/seeders/"
+        }
+    },
+    "scripts": {
+        "post-autoload-dump": [
+            "Illuminate\\Foundation\\ComposerScripts::postAutoloadDump",
+            "@php artisan package:discover --ansi"
+        ],
+        "post-root-package-install": [
+            "@php -r \"file_exists('.env') || copy('.env.example', '.env');\""
+        ],
+        "post-create-project-cmd": [
+            "@php artisan key:generate --ansi"
+        ]
+    },
+    "minimum-stability": "stable",
+    "prefer-stable": true
+}
+EOF
+
+# Luego instalar dependencias
+composer install
+Opción C: Si ya tienes un proyecto pero con problemas de permisos
+bash
+# Arreglar permisos primero
+sudo chown -R $USER:$USER /var/www/html/cifpzonzamas.lan
+sudo chmod -R 755 /var/www/html/cifpzonzamas.lan
+
+# Crear directorio vendor si no existe
+mkdir -p vendor/composer
+
+# Intentar composer install de nuevo
+composer install
+3. Solución rápida y común:
+bash
+# 1. Ir al directorio correcto
+cd /var/www/html
+
+# 2. Si el directorio existe pero tiene problemas
+sudo rm -rf cifpzonzamas.lan  # Solo si no importa perder lo que haya
+
+# 3. Crear proyecto Laravel desde cero
+composer create-project --prefer-dist laravel/laravel cifpzonzamas.lan
+
+# 4. Si da error de permisos durante la creación
+sudo chown -R $USER:$USER cifpzonzamas.lan
+4. Para evitar problemas de permisos en el futuro:
+bash
+# Crear un alias útil
+echo "alias composer='composer'" >> ~/.bashrc
+
+# O configurar permisos globales para proyectos web
+sudo adduser $USER www-data  # Agregar tu usuario al grupo www-data
+sudo chown -R $USER:www-data /var/www
+sudo chmod -R 775 /var/www
+¿Qué prefieres hacer?
+Crear un nuevo proyecto Laravel desde cero (recomendado si es nuevo)
+Recuperar un proyecto existente (si ya tenías archivos)
+Solucionar solo permisos (si el proyecto ya estaba funcionando)
+Dime qué archivos ves con ls -la en /var/www/html/cifpzonzamas.lan para darte la solución más precisa.
+daniel@daniel-virtualbox:/var/www/html/cifpzonzamas.lan$ # Regresa al directorio padre
+cd /var/www/html
+
+# Si el directorio cifpzonzamas.lan está vacío, puedes eliminarlo o moverlo
+sudo rm -rf cifpzonzamas.lan  # CUIDADO: solo si no hay archivos importantes
+
+# Crear nuevo proyecto Laravel
+composer create-project laravel/laravel cifpzonzamas.lan
+[sudo] contraseña para daniel: 
+Creating a "laravel/laravel" project at "./cifpzonzamas.lan"
+Installing laravel/laravel (v12.11.2)
+
+In ProjectInstaller.php line 69:
+                              
+  mkdir(): Permission denied  
+                              
+
+create-project [-s|--stability STABILITY] [--prefer-source] [--prefer-dist] [--prefer-install PREFER-INSTALL] [--repository REPOSITORY] [--repository-url REPOSITORY-URL] [--add-repository] [--dev] [--no-dev] [--no-custom-installers] [--no-scripts] [--no-progress] [--no-secure-http] [--keep-vcs] [--remove-vcs] [--no-install] [--no-audit] [--audit-format AUDIT-FORMAT] [--no-security-blocking] [--ignore-platform-req IGNORE-PLATFORM-REQ] [--ignore-platform-reqs] [--ask] [--] [<package> [<directory> [<version>]]]
+El error mkdir(): Permission denied indica que tu usuario no tiene permisos para crear directorios en /var/www/html. Vamos a solucionarlo:
+Solución 1: Dar permisos a tu usuario
+bash
+# Dar permisos a tu usuario en /var/www/html
+sudo chown -R $USER:$USER /var/www/html
+sudo chmod -R 755 /var/www/html
+
+# Ahora intenta crear el proyecto otra vez
+composer create-project laravel/laravel cifpzonzamas.lan
+Solución 2: Crear el proyecto en tu directorio home y moverlo
+bash
+# Crear en tu home (donde tienes permisos)
+cd ~
+composer create-project laravel/laravel cifpzonzamas.lan
+
+# Moverlo a /var/www/html
+sudo mv cifpzonzamas.lan /var/www/html/
+
+# Dar permisos adecuados
+sudo chown -R $USER:www-data /var/www/html/cifpzonzamas.lan
+sudo chmod -R 775 /var/www/html/cifpzonzamas.lan
+Solución 3: Usar permisos específicos
+bash
+# Dar permisos solo al directorio html
+sudo chown $USER:$USER /var/www/html
+sudo chmod 755 /var/www/html
+
+# Crear el proyecto
+cd /var/www/html
+composer create-project laravel/laravel cifpzonzamas.lan
+
+# Si necesitas que Apache/Nginx pueda escribir
+sudo chown -R $USER:www-data cifpzonzamas.lan
+sudo chmod -R 775 cifpzonzamas.lan/storage
+sudo chmod -R 775 cifpzonzamas.lan/bootstrap/cache
+Solución 4: Paso a paso manual
+bash
+# 1. Crear directorio con sudo
+sudo mkdir -p /var/www/html/cifpzonzamas.lan
+
+# 2. Dar permisos a tu usuario
+sudo chown -R $USER:$USER /var/www/html/cifpzonzamas.lan
+
+# 3. Entrar al directorio
+cd /var/www/html/cifpzonzamas.lan
+
+# 4. Crear composer.json manualmente primero
+composer init --name="proyecto/cifpzonzamas" --description="Proyecto Laravel" --author="Tu Nombre" --type=project
+
+# 5. Requerir Laravel
+composer require laravel/laravel
+
+# 6. Instalar el framework
+composer install
+Solución 5: Si estás en Ubuntu y usas Apache
+bash
+# Agregarte al grupo www-data
+sudo usermod -a -G www-data $USER
+
+# Cerrar sesión y volver a entrar para aplicar cambios
+# O usar este comando para aplicar sin cerrar sesión:
+newgrp www-data
+
+# Dar permisos al grupo
+sudo chown -R $USER:www-data /var/www/html
+sudo chmod -R 775 /var/www/html
+
+# Ahora crear el proyecto
+composer create-project laravel/laravel cifpzonzamas.lan
+Recomendación:
+Usa la Solución 1 que es la más simple:
+bash
+sudo chown -R $USER:$USER /var/www/html
+cd /var/www/html
+composer create-project laravel/laravel cifpzonzamas.lan
+Después de crear el proyecto, si usas Apache o Nginx, asegura los permisos de los directorios de escritura:
+bash
+cd cifpzonzamas.lan
+sudo chmod -R 775 storage bootstrap/cache
+Nota: Después de ejecutar sudo chown, te pedirá tu contraseña de sudo. Introduce la misma contraseña que usas para iniciar sesión en Ubuntu.
+¿Quieres que te guíe con alguna solución específica?
+Quiero que se cree en ese directorio
+Perfecto, vamos a crear el proyecto Laravel en /var/www/html/cifpzonzamas.lan. Sigue estos pasos:
+Paso 1: Preparar el directorio con los permisos correctos
+bash
+# Dar permisos completos a tu usuario en /var/www/html
+sudo chown -R $USER:$USER /var/www/html
+
+# Verificar que tienes permisos
+ls -ld /var/www/html
+# Debería ver tu usuario como propietario
+Paso 2: Crear el proyecto Laravel
+bash
+# Ir al directorio padre
+cd /var/www/html
+
+# Eliminar el directorio si existe y está vacío o da problemas
+# PRIMERO VERIFICA QUE NO HAY ARCHIVOS IMPORTANTES:
+ls -la cifpzonzamas.lan/
+
+# Si está vacío o quieres empezar desde cero:
+sudo rm -rf cifpzonzamas.lan
+
+# Crear el proyecto Laravel
+composer create-project --prefer-dist laravel/laravel cifpzonzamas.lan
+Paso 3: Si aún da error de permisos, hacerlo paso a paso
+bash
+# Opción alternativa si el paso anterior falla:
+cd /var/www/html
+
+# 1. Crear directorio manualmente
+mkdir -p cifpzonzamas.lan
+
+# 2. Entrar al directorio
+cd cifpzonzamas.lan
+
+# 3. Crear proyecto aquí mismo
+composer create-project --prefer-dist laravel/laravel ./
+Paso 4: Solución definitiva si persiste el error
+bash
+# Crear en un directorio temporal
+cd /tmp
+composer create-project --prefer-dist laravel/laravel proyecto_temp
+
+# Mover al directorio deseado
+sudo mv proyecto_temp/* /var/www/html/cifpzonzamas.lan/
+sudo mv proyecto_temp/.* /var/www/html/cifpzonzamas.lan/ 2>/dev/null || true
+
+# Limpiar
+rm -rf proyecto_temp
+
+# Ir al proyecto
+cd /var/www/html/cifpzonzamas.lan
+
+# Dar permisos correctos
+sudo chown -R $USER:$USER .
+Paso 5: Verificar que se creó correctamente
+bash
+# Listar contenido del proyecto
+ls -la /var/www/html/cifpzonzamas.lan/
+
+# Deberías ver archivos como:
+# - composer.json
+# - artisan
+# - app/
+# - bootstrap/
+# - config/
+# - etc.
+Paso 6: Configurar permisos para el servidor web (si usas Apache/Nginx)
+bash
+cd /var/www/html/cifpzonzamas.lan
+
+# Dar permisos de escritura a storage y cache
+chmod -R 775 storage bootstrap/cache
+
+# Si usas servidor web (www-data para Apache en Ubuntu)
+sudo chown -R $USER:www-data storage bootstrap/cache
+sudo chmod -R 775 storage bootstrap/cache
+Si NADA funciona, prueba este comando directo:
+bash
+# Ejecutar todo en una línea
+cd /var/www/html && sudo rm -rf cifpzonzamas.lan && composer create-project --prefer-dist laravel/laravel cifpzonzamas.lan --no-interaction
+Resumen del comando principal que debería funcionar:
+bash
+sudo chown -R $USER:$USER /var/www/html
+cd /var/www/html
+composer create-project --prefer-dist laravel/laravel cifpzonzamas.lan
+Ejecuta esto y dime qué error específico aparece si no funciona, para darte una solución más precisa.
+Ya funciona
+¡Excelente! 🎉 Me alegro mucho que ya funcione.
+Pasos siguientes recomendados:
+1. Verificar la instalación
+bash
+cd /var/www/html/cifpzonzamas.lan
+php artisan --version
+2. Configurar el entorno
+bash
+# Copiar el archivo de entorno
+cp .env.example .env
+
+# Generar la clave de aplicación
+php artisan key:generate
+3. Configurar permisos (importante para Laravel)
+bash
+# Dar permisos de escritura a los directorios necesarios
+chmod -R 775 storage bootstrap/cache
+
+# Si usas servidor web (Apache/Nginx)
+sudo chown -R $USER:www-data storage bootstrap/cache
+4. Iniciar el servidor de desarrollo
+bash
+# Opción 1: Usar el servidor interno de PHP
+php artisan serve
+
+# Opción 2: En un puerto específico
+php artisan serve --port=8000
+
+# Acceder en el navegador: http://localhost:8000
+5. Para desarrollo con Apache (si lo necesitas)
+bash
+# Crear un virtual host (en Ubuntu/Debian)
+sudo nano /etc/apache2/sites-available/cifpzonzamas.lan.conf
+
+# Contenido del virtual host:
+"""
+<VirtualHost *:80>
+    ServerName cifpzonzamas.lan
+    DocumentRoot /var/www/html/cifpzonzamas.lan/public
+    
+    <Directory /var/www/html/cifpzonzamas.lan/public>
+        Options Indexes FollowSymLinks
+        AllowOverride All
+        Require all granted
+    </Directory>
+    
+    ErrorLog ${APACHE_LOG_DIR}/cifpzonzamas_error.log
+    CustomLog ${APACHE_LOG_DIR}/cifpzonzamas_access.log combined
+</VirtualHost>
+"""
+
+# Habilitar el sitio
+sudo a2ensite cifpzonzamas.lan.conf
+sudo systemctl reload apache2
+
+# Agregar al hosts local
+echo "127.0.0.1    cifpzonzamas.lan" | sudo tee -a /etc/hosts
+Comandos útiles para empezar:
+bash
+# Instalar dependencias adicionales (si las necesitas)
+composer require laravel/breeze --dev
+
+# Crear autenticación con Breeze
+php artisan breeze:install
+
+# Compilar assets (si usas Vite)
+npm install
+npm run dev
+
+# Migrar base de datos
+php artisan migrate
+Si necesitas ayuda adicional:
+Documentación oficial Laravel: https://laravel.com/docs
+Problemas comunes:
+composer update para actualizar paquetes
+php artisan storage:link para enlace simbólico
+php artisan config:clear si hay problemas de caché
+¿Necesitas ayuda con algo específico del proyecto ahora que ya tienes Laravel instalado?
+83 packages you are using are looking for funding.
+Use the `composer fund` command to find out more!
+> @php artisan vendor:publish --tag=laravel-assets --ansi --force
+
+   INFO  No publishable resources for tag [laravel-assets].  
+
+Found 3 security vulnerability advisories affecting 3 packages.
+Run "composer audit" for a full list of advisories.
+
+   INFO  Installing and building Node dependencies.  
+
+sh: 1: npm: not found
+   INFO  Livewire scaffolding installed successfully.  
+
+No se ha encontrado la orden «npm», pero se puede instalar con:
+sudo apt install npm
+No se ha encontrado la orden «npm», pero se puede instalar con:
+sudo apt install npm
+
+   Illuminate\Database\QueryException 
+
+  could not find driver (Connection: sqlite, Database: /var/www/html/cifpzonzamas.lan/database/database.sqlite, SQL: select exists (select 1 from "main".sqlite_master where name = 'migrations' and type = 'table') as "exists")
+
+  at vendor/laravel/framework/src/Illuminate/Database/Connection.php:831
+    827▕             $exceptionType = $this->isUniqueConstraintError($e)
+    828▕                 ? UniqueConstraintViolationException::class
+    829▕                 : QueryException::class;
+    830▕ 
+  ➜ 831▕             throw new $exceptionType(
+    832▕                 $this->getNameWithReadWriteType(),
+    833▕                 $query,
+    834▕                 $this->prepareBindings($bindings),
+    835▕                 $e,
+
+      +39 vendor frames 
+
+  40  artisan:16
+      Illuminate\Foundation\Application::handleCommand()
+Tienes algunos problemas comunes de configuración inicial. Vamos a solucionarlos paso a paso:
+Problema 1: Falta Node.js/npm
+bash
+# Instalar Node.js y npm
+sudo apt update
+sudo apt install nodejs npm -y
+
+# Verificar instalación
+node --version
+npm --version
+Problema 2: Falta extensión SQLite de PHP
+bash
+# Instalar SQLite para PHP
+sudo apt install php-sqlite3 -y
+
+# Reiniciar Apache (si lo usas)
+sudo systemctl restart apache2
+
+# O reiniciar PHP-FPM
+sudo systemctl restart php8.x-fpm  # Cambia 8.x por tu versión de PHP
+Problema 3: Configurar base de datos
+bash
+cd /var/www/html/cifpzonzamas.lan
+
+# Opción A: Usar SQLite (más simple para desarrollo)
+# Crear el archivo de base de datos SQLite
+touch database/database.sqlite
+chmod 666 database/database.sqlite
+
+# Configurar .env para SQLite
+nano .env
+En el archivo .env, cambia:
+text
+DB_CONNECTION=sqlite
+# Comenta o elimina las otras líneas de DB_*
+O Opción B: Instalar MySQL/MariaDB
+bash
+# Instalar MySQL y extensión PHP
+sudo apt install mariadb-server php-mysql -y
+
+# Configurar .env para MySQL
+nano .env
+Configuración para MySQL:
+text
+DB_CONNECTION=mysql
+DB_HOST=127.0.0.1
+DB_PORT=3306
+DB_DATABASE=laravel
+DB_USERNAME=root
+DB_PASSWORD=
+Solución completa paso a paso:
+1. Instalar dependencias faltantes
+bash
+sudo apt update
+sudo apt install nodejs npm php-sqlite3 -y
+
+# Verificar PHP extensiones
+php -m | grep sqlite
+2. Configurar base de datos SQLite
+bash
+cd /var/www/html/cifpzonzamas.lan
+
+# Crear y dar permisos a la base de datos SQLite
+touch database/database.sqlite
+chmod 666 database/database.sqlite
+
+# Editar .env para usar SQLite
+nano .env
+En el archivo .env asegúrate de tener:
+text
+DB_CONNECTION=sqlite
+# DB_HOST=127.0.0.1
+# DB_PORT=3306
+# DB_DATABASE=laravel
+# DB_USERNAME=root
+# DB_PASSWORD=
+3. Instalar dependencias Node.js y compilar
+bash
+# Instalar dependencias de Node
+npm install
+
+# Compilar assets
+npm run dev
+
+# O para producción
+npm run build
+4. Ejecutar migraciones
+bash
+# Limpiar caché de configuración
+php artisan config:clear
+
+# Ejecutar migraciones
+php artisan migrate
+
+# O si solo quieres ver qué migraciones hay
+php artisan migrate:status
+5. Si prefieres MySQL en lugar de SQLite:
+bash
+# Instalar MySQL/MariaDB
+sudo apt install mariadb-server -y
+
+# Configurar MySQL
+sudo mysql_secure_installation
+
+# Crear base de datos para Laravel
+sudo mysql -u root -p
+En MySQL:
+sql
+CREATE DATABASE laravel;
+GRANT ALL PRIVILEGES ON laravel.* TO 'laraveluser'@'localhost' IDENTIFIED BY 'tu_password';
+FLUSH PRIVILEGES;
+EXIT;
+Actualizar .env:
+text
+DB_CONNECTION=mysql
+DB_HOST=127.0.0.1
+DB_PORT=3306
+DB_DATABASE=laravel
+DB_USERNAME=laraveluser
+DB_PASSWORD=tu_password
+6. Probar la aplicación
+bash
+# Iniciar servidor de desarrollo
+php artisan serve
+
+# Abrir en navegador: http://localhost:8000
+Resumen de comandos esenciales:
+bash
+# 1. Instalar lo que falta
+sudo apt install nodejs npm php-sqlite3 -y
+
+# 2. Ir al proyecto
+cd /var/www/html/cifpzonzamas.lan
+
+# 3. Crear DB SQLite
+touch database/database.sqlite
+chmod 666 database/database.sqlite
+
+# 4. Instalar dependencias Node
+npm install
+npm run dev
+
+# 5. Ejecutar migraciones
+php artisan migrate
+
+# 6. Iniciar servidor
+php artisan serve
+¿Quieres configurar MySQL en lugar de SQLite o prefieres continuar con SQLite que es más simple para desarrollo?
+SQLSTATE[HY000] [1044] Access denied for user 'daniel_clases'@'localhost' to database 'zonzamas' (Connection: mysql, Host: 127.0.0.1, Port: 3306, Database: zonzamas, SQL: select * from `sessions` where `id` = kGLb9U4rVYrszBkMXV7EBvoviueiohsTC3SFU9y1 limit 1)
+
+LARAVEL
+12.46.0
+PHP
+8.4.17
+UNHANDLED
+CODE 1044
+500
+GET
+http://127.0.0.1:8000/login
+
+Exception trace
+54 vendor frames
+
+public/index.php
+public/index.php:20
+
+15
+16// Bootstrap Laravel and handle the request...
+17/** @var Application $app */
+18$app = require_once __DIR__.'/../bootstrap/app.php';
+19
+20$app->handleRequest(Request::capture());
+Tienes un error de permisos de MySQL. El usuario daniel_clases no tiene acceso a la base de datos zonzamas. Vamos a solucionarlo:
+Solución paso a paso:
+1. Acceder a MySQL como root
+bash
+sudo mysql -u root -p
+2. Verificar usuarios y permisos existentes
+sql
+-- Ver usuarios
+SELECT user, host FROM mysql.user;
+
+-- Ver permisos específicos de daniel_clases
+SHOW GRANTS FOR 'daniel_clases'@'localhost';
+3. Crear o reparar la configuración
+Opción A: Si el usuario existe pero no tiene permisos
+sql
+-- Dar todos los permisos al usuario existente
+GRANT ALL PRIVILEGES ON zonzamas.* TO 'daniel_clases'@'localhost';
+FLUSH PRIVILEGES;
+
+-- O crear la base de datos si no existe
+CREATE DATABASE IF NOT EXISTS zonzamas;
+GRANT ALL PRIVILEGES ON zonzamas.* TO 'daniel_clases'@'localhost';
+FLUSH PRIVILEGES;
+Opción B: Si el usuario NO existe
+sql
+-- Crear usuario nuevo (elige una contraseña segura)
+CREATE USER 'daniel_clases'@'localhost' IDENTIFIED BY 'tu_password_seguro';
+CREATE DATABASE IF NOT EXISTS zonzamas;
+GRANT ALL PRIVILEGES ON zonzamas.* TO 'daniel_clases'@'localhost';
+FLUSH PRIVILEGES;
+
+-- Salir de MySQL
+EXIT;
+4. Actualizar el archivo .env de Laravel
+bash
+cd /var/www/html/cifpzonzamas.lan
+nano .env
+Asegúrate de que tienes esta configuración:
+env
+DB_CONNECTION=mysql
+DB_HOST=127.0.0.1
+DB_PORT=3306
+DB_DATABASE=zonzamas
+DB_USERNAME=daniel_clases
+DB_PASSWORD=tu_password_seguro  # La misma que usaste al crear el usuario
+5. Verificar conexión desde Laravel
+bash
+# Probar conexión a la base de datos
+php artisan tinker
+En Tinker:
+php
+// Probar conexión
+DB::connection()->getPdo();
+// Debería mostrar: object(PDO) ... sin errores
+
+// O crear una tabla de prueba
+DB::statement('SELECT 1');
+Salir de Tinker: Ctrl + D o escribir exit
+6. Ejecutar migraciones
+bash
+# Limpiar caché
+php artisan config:clear
+php artisan cache:clear
+
+# Ejecutar migraciones
+php artisan migrate
+
+# Si hay errores, forzar
+php artisan migrate --force
+
+# Ver estado de migraciones
+php artisan migrate:status
+7. Solución alternativa rápida: Usar root temporalmente
+Si necesitas continuar rápido, puedes usar root (NO recomendado para producción):
+bash
+# Editar .env temporalmente
+nano .env
+env
+DB_CONNECTION=mysql
+DB_HOST=127.0.0.1
+DB_PORT=3306
+DB_DATABASE=zonzamas
+DB_USERNAME=root
+DB_PASSWORD=  # Deja vacío si no tienes contraseña en root
+Importante: No uses root en producción.
+8. Crear la base de datos si no existe
+bash
+# Acceder a MySQL
+sudo mysql -u root -p
+
+-- Crear base de datos
+CREATE DATABASE IF NOT EXISTS zonzamas 
+CHARACTER SET utf8mb4 
+COLLATE utf8mb4_unicode_ci;
+
+-- Salir
+EXIT;
+9. Comando completo para crear usuario y base de datos:
+bash
+# Script completo
+sudo mysql -u root -p <<EOF
+CREATE DATABASE IF NOT EXISTS zonzamas 
+CHARACTER SET utf8mb4 
+COLLATE utf8mb4_unicode_ci;
+
+CREATE USER IF NOT EXISTS 'daniel_clases'@'localhost' IDENTIFIED BY 'Password123!';
+GRANT ALL PRIVILEGES ON zonzamas.* TO 'daniel_clases'@'localhost';
+FLUSH PRIVILEGES;
+EOF
+10. Si el error persiste: Verificar sesiones
+bash
+# Limpiar sesiones existentes
+php artisan session:table
+php artisan migrate  # Esto creará la tabla sessions
+
+# O usar sesiones de archivo temporalmente
+# En .env cambiar:
+SESSION_DRIVER=file
+
+# Luego limpiar caché
+php artisan config:clear
+Resumen de comandos esenciales:
+bash
+# 1. Entrar a MySQL
+sudo mysql -u root -p
+
+# 2. En MySQL, ejecutar:
+CREATE DATABASE zonzamas;
+GRANT ALL PRIVILEGES ON zonzamas.* TO 'daniel_clases'@'localhost' IDENTIFIED BY 'tu_password';
+FLUSH PRIVILEGES;
+EXIT;
+
+# 3. Actualizar .env
+cd /var/www/html/cifpzonzamas.lan
+nano .env  # Verificar DB_DATABASE, DB_USERNAME, DB_PASSWORD
+
+# 4. Ejecutar migraciones
+php artisan config:clear
+php artisan migrate
+¿Tienes contraseña para el usuario MySQL daniel_clases o necesitas crear uno nuevo?
+php artisan migrate --seed
+
+   Illuminate\Database\QueryException 
+
+  SQLSTATE[HY000] [1044] Access denied for user 'daniel_clases'@'localhost' to database 'zonzamas' (Connection: mysql, Host: 127.0.0.1, Port: 3306, Database: zonzamas, SQL: select exists (select 1 from information_schema.tables where table_schema = schema() and table_name = 'migrations' and table_type in ('BASE TABLE', 'SYSTEM VERSIONED')) as `exists`)
+
+  at vendor/laravel/framework/src/Illuminate/Database/Connection.php:831
+    827▕             $exceptionType = $this->isUniqueConstraintError($e)
+    828▕                 ? UniqueConstraintViolationException::class
+    829▕                 : QueryException::class;
+    830▕ 
+  ➜ 831▕             throw new $exceptionType(
+    832▕                 $this->getNameWithReadWriteType(),
+    833▕                 $query,
+    834▕                 $this->prepareBindings($bindings),
+    835▕                 $e,
+
+      +39 vendor frames 
+
+  40  artisan:16
+      Illuminate\Foundation\Application::handleCommand()
+
+daniel@daniel-virtualbox:/var/www/html/cifpzonzamas.lan$
+El usuario daniel_clases aún no tiene permisos. Vamos a solucionarlo definitivamente:
+Solución completa:
+1. Acceder a MySQL como root
+bash
+sudo mysql -u root -p
+(Presiona Enter si no tienes contraseña, o usa tu contraseña de root)
+2. En MySQL, ejecutar estos comandos:
+sql
+-- Ver si el usuario existe
+SELECT user, host FROM mysql.user WHERE user = 'daniel_clases';
+
+-- Si existe, eliminar para empezar de nuevo
+DROP USER IF EXISTS 'daniel_clases'@'localhost';
+
+-- Crear usuario nuevo con contraseña
+CREATE USER 'daniel_clases'@'localhost' IDENTIFIED BY 'Daniel2025!';
+
+-- Crear base de datos si no existe
+CREATE DATABASE IF NOT EXISTS zonzamas 
+CHARACTER SET utf8mb4 
+COLLATE utf8mb4_unicode_ci;
+
+-- Dar TODOS los permisos
+GRANT ALL PRIVILEGES ON zonzamas.* TO 'daniel_clases'@'localhost';
+GRANT ALL PRIVILEGES ON `zonzamas\_%`.* TO 'daniel_clases'@'localhost';  -- Para tablas con _
+
+-- Aplicar cambios
+FLUSH PRIVILEGES;
+
+-- Verificar permisos
+SHOW GRANTS FOR 'daniel_clases'@'localhost';
+
+-- Salir
+EXIT;
+3. Actualizar archivo .env
+bash
+cd /var/www/html/cifpzonzamas.lan
+nano .env
+Asegúrate de que tienes EXACTAMENTE esto:
+env
+DB_CONNECTION=mysql
+DB_HOST=127.0.0.1
+DB_PORT=3306
+DB_DATABASE=zonzamas
+DB_USERNAME=daniel_clases
+DB_PASSWORD=Daniel2025!
+4. Probar conexión manualmente
+bash
+# Probar si MySQL acepta la conexión
+mysql -u daniel_clases -pDaniel2025! -e "SHOW DATABASES;"
+
+# O interactivo
+mysql -u daniel_clases -p
+# Introduce: Daniel2025!
+5. Limpiar caché de Laravel
+bash
+php artisan config:clear
+php artisan cache:clear
+php artisan route:clear
+php artisan view:clear
+6. Ejecutar migraciones paso a paso
+bash
+# Primero solo crear tabla de migraciones
+php artisan migrate:install
+
+# Verificar que se creó
+php artisan migrate:status
+
+# Si funciona, ejecutar todas las migraciones
+php artisan migrate
+
+# Luego los seeders
+php artisan db:seed
+7. Solución alternativa: Script completo automático
+bash
+# Script bash para hacer todo
+cd /var/www/html/cifpzonzamas.lan
+
+# Configurar MySQL
+sudo mysql -u root <<MYSQL_SCRIPT
+DROP USER IF EXISTS 'daniel_clases'@'localhost';
+CREATE USER 'daniel_clases'@'localhost' IDENTIFIED BY 'Daniel2025!';
+CREATE DATABASE IF NOT EXISTS zonzamas CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+GRANT ALL PRIVILEGES ON zonzamas.* TO 'daniel_clases'@'localhost';
+GRANT ALL PRIVILEGES ON \`zonzamas\\_%\`.* TO 'daniel_clases'@'localhost';
+FLUSH PRIVILEGES;
+MYSQL_SCRIPT
+
+# Configurar .env (asegúrate de que las variables sean correctas)
+cat > .env <<ENV_CONFIG
+APP_NAME=Laravel
+APP_ENV=local
+APP_KEY=$(php artisan key:generate --show)
+APP_DEBUG=true
+APP_URL=http://localhost
+
+DB_CONNECTION=mysql
+DB_HOST=127.0.0.1
+DB_PORT=3306
+DB_DATABASE=zonzamas
+DB_USERNAME=daniel_clases
+DB_PASSWORD=Daniel2025!
+
+BROADCAST_DRIVER=log
+CACHE_DRIVER=file
+FILESYSTEM_DISK=local
+QUEUE_CONNECTION=sync
+SESSION_DRIVER=database
+SESSION_LIFETIME=120
+ENV_CONFIG
+
+# Limpiar y migrar
+php artisan config:clear
+php artisan migrate --seed
+8. Si aún falla: Usar root temporalmente para diagnóstico
+bash
+# Editar .env temporalmente
+nano .env
+Cambia temporalmente a:
+env
+DB_USERNAME=root
+DB_PASSWORD=  # Vacío o tu contraseña de root
+bash
+php artisan migrate --seed
+Si funciona con root, el problema es específicamente con el usuario daniel_clases.
+9. Verificar firewall/SELinux (poco común en Ubuntu desktop)
+bash
+# Verificar si MySQL escucha conexiones locales
+sudo netstat -tlnp | grep mysql
+
+# Deberías ver: 127.0.0.1:3306
+10. Comprobación final
+bash
+# 1. Verificar que MySQL está corriendo
+sudo systemctl status mysql
+
+# 2. Probar conexión con PHP
+php -r "
+try {
+    \$pdo = new PDO('mysql:host=127.0.0.1;dbname=zonzamas', 'daniel_clases', 'Daniel2025!');
+    echo 'Conexión exitosa!';
+} catch (PDOException \$e) {
+    echo 'Error: ' . \$e->getMessage();
+}
+"
+
+# 3. Si todo está bien, ejecutar
+php artisan migrate --seed
+¿Cuál es el resultado del paso 10.2? Eso nos dirá si el problema es de MySQL o de Laravel específicamente.
+daniel@daniel-virtualbox:/var/www/html/cifpzonzamas.lan$ php artisan db:seed
+
+   INFO  Seeding database.  
+
+
+   Illuminate\Database\QueryException 
+
+  SQLSTATE[HY000] [1044] Access denied for user 'daniel_clases'@'localhost' to database 'zonzamas' (Connection: mysql, Host: 127.0.0.1, Port: 3306, Database: zonzamas, SQL: insert into `users` (`name`, `email`, `email_verified_at`, `password`, `remember_token`, `updated_at`, `created_at`) values (Test User, test@example.com, 2026-02-03 11:49:14, $2y$12$/q3nsF1191Re01h06bk6HucSxF8Vk.ouJ66r88iMhcpF92ycCci.e, LaawtWtQrE, 2026-02-03 11:49:14, 2026-02-03 11:49:14))
+
+  at vendor/laravel/framework/src/Illuminate/Database/Connection.php:831
+    827▕             $exceptionType = $this->isUniqueConstraintError($e)
+    828▕                 ? UniqueConstraintViolationException::class
+    829▕                 : QueryException::class;
+    830▕ 
+  ➜ 831▕             throw new $exceptionType(
+    832▕                 $this->getNameWithReadWriteType(),
+    833▕                 $query,
+    834▕                 $this->prepareBindings($bindings),
+    835▕                 $e,
+
+      +22 vendor frames 
+
+  23  database/seeders/DatabaseSeeder.php:27
+      Illuminate\Database\Eloquent\Factories\Factory::create()
+      +25 vendor frames 
+
+  49  artisan:16
+      Illuminate\Foundation\Application::handleCommand()
+El usuario daniel_clases tiene permisos de lectura pero no de escritura/inserción. Vamos a solucionarlo definitivamente:
+Solución 1: Dar permisos COMPLETOS al usuario
+bash
+# Acceder a MySQL como root
+sudo mysql -u root -p
+En MySQL, ejecutar esto PASO A PASO:
+sql
+-- 1. Eliminar usuario existente si hay problemas
+DROP USER IF EXISTS 'daniel_clases'@'localhost';
+
+-- 2. Crear usuario nuevo con contraseña
+CREATE USER 'daniel_clases'@'localhost' IDENTIFIED BY 'Daniel2025!';
+
+-- 3. Crear base de datos (si no existe)
+CREATE DATABASE IF NOT EXISTS zonzamas 
+CHARACTER SET utf8mb4 
+COLLATE utf8mb4_unicode_ci;
+
+-- 4. Dar TODOS los privilegios GLOBALES (esto es clave)
+GRANT ALL PRIVILEGES ON *.* TO 'daniel_clases'@'localhost' WITH GRANT OPTION;
+
+-- 5. Asegurar permisos específicos en la base de datos
+GRANT ALL PRIVILEGES ON zonzamas.* TO 'daniel_clases'@'localhost';
+
+-- 6. Aplicar cambios inmediatamente
+FLUSH PRIVILEGES;
+
+-- 7. Verificar que los permisos están aplicados
+SHOW GRANTS
+el usuario es daniel_clases y la contraseña lanza.pass
+Perfecto, ahora vamos a configurar correctamente con esa contraseña. El problema es que el usuario existe pero no tiene permisos de escritura.
+Solución definitiva:
+1. Acceder a MySQL y configurar permisos COMPLETOS
+bash
+sudo mysql -u root -p
+(Introduce la contraseña de root de MySQL, si no tienes presiona Enter)
+2. En MySQL, ejecutar estos comandos exactos:
+sql
+-- 1. Verificar si el usuario existe
+SELECT user, host FROM mysql.user WHERE user = 'daniel_clases';
+
+-- 2. Si existe, ELIMINARLO para empezar limpio
+DROP USER IF EXISTS 'daniel_clases'@'localhost';
+
+-- 3. Crear usuario NUEVO con la contraseña correcta
+CREATE USER 'daniel_clases'@'localhost' IDENTIFIED BY 'lanza.pass';
+
+-- 4. Crear base de datos si no existe
+CREATE DATABASE IF NOT EXISTS zonzamas 
+CHARACTER SET utf8mb4 
+COLLATE utf8mb4_unicode_ci;
+
+-- 5. Dar TODOS los permisos (esto incluye INSERT, UPDATE, DELETE)
+GRANT ALL PRIVILEGES ON zonzamas.* TO 'daniel_clases'@'localhost';
+
+-- 6. Opcional: Dar permisos para crear bases de datos temporales
+GRANT CREATE TEMPORARY TABLES ON zonzamas.* TO 'daniel_clases'@'localhost';
+
+-- 7. Aplicar cambios inmediatamente
+FLUSH PRIVILEGES;
+
+-- 8. Verificar los permisos otorgados
+SHOW GRANTS FOR 'daniel_clases'@'localhost';
+
+-- 9. Salir
+EXIT;
+3. Actualizar el archivo .env con la contraseña CORRECTA
+bash
+cd /var/www/html/cifpzonzamas.lan
+nano .env
+Asegúrate que tienes EXACTAMENTE esto:
+env
+DB_CONNECTION=mysql
+DB_HOST=127.0.0.1
+DB_PORT=3306
+DB_DATABASE=zonzamas
+DB_USERNAME=daniel_clases
+DB_PASSWORD=lanza.pass
+4. Probar la conexión MANUALMENTE desde terminal
+bash
+# Probar si puedes conectar y hacer operaciones de escritura
+mysql -u daniel_clases -planza.pass -e "USE zonzamas; CREATE TABLE test_permisos (id INT); DROP TABLE test_permisos;"
+5. Limpiar TODO el caché de Laravel
+bash
+php artisan config:clear
+php artisan cache:clear
+php artisan route:clear
+php artisan view:clear
+php artisan optimize:clear
+
+# También limpiar caché de composer
+composer dump-autoload
+6. Verificar la conexión con un script PHP simple
+bash
+cat > test_conexion.php << 'EOF'
+<?php
+try {
+    $pdo = new PDO('mysql:host=127.0.0.1;dbname=zonzamas', 'daniel_clases', 'lanza.pass');
+    $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+    
+    // Probar SELECT
+    $stmt = $pdo->query("SELECT 1");
+    echo "✓ SELECT funciona\n";
+    
+    // Probar INSERT
+    $pdo->exec("CREATE TEMPORARY TABLE test_perm (id INT)");
+    $pdo->exec("INSERT INTO test_perm VALUES (1)");
+    echo "✓ INSERT funciona\n";
+    
+    // Probar DROP
+    $pdo->exec("DROP TEMPORARY TABLE test_perm");
+    echo "✓ DROP funciona\n";
+    
+    echo "\n✅ TODOS los permisos están OK\n";
+    
+} catch (PDOException $e) {
+    echo "❌ Error: " . $e->getMessage() . "\n";
+}
+EOF
+
+php test_conexion.php
+rm test_conexion.php
+7. Ejecutar migraciones y seeders PASO A PASO
+bash
+# 1. Primero solo instalar la tabla de migraciones
+php artisan migrate:install
+
+# 2. Verificar que se creó
+php artisan migrate:status
+
+# 3. Si funciona, ejecutar TODAS las migraciones
+php artisan migrate
+
+# 4. Solo si las migraciones funcionan, ejecutar seeders
+php artisan db:seed
+
+# 5. O todo junto con force
+php artisan migrate --seed --force
+8. Si aún falla: Solución alternativa EXTREMA
+bash
+# Dar privilegios GLOBALES (cuidado en producción)
+sudo mysql -u root -p <<MYSQL_SCRIPT
+DROP USER IF EXISTS 'daniel_clases'@'localhost';
+CREATE USER 'daniel_clases'@'localhost' IDENTIFIED BY 'lanza.pass';
+GRANT ALL PRIVILEGES ON *.* TO 'daniel_clases'@'localhost' WITH GRANT OPTION;
+FLUSH PRIVILEGES;
+MYSQL_SCRIPT
+
+# Luego intentar de nuevo
+php artisan migrate --seed
+9. Verificar que MySQL está corriendo correctamente
+bash
+# Verificar estado de MySQL
+sudo systemctl status mysql
+
+# Reiniciar si es necesario
+sudo systemctl restart mysql
+
+# Ver logs de MySQL para ver errores
+sudo tail -f /var/log/mysql/error.log
+Resumen de comandos CRÍTICOS:
+bash
+# 1. Configurar MySQL
+sudo mysql -u root -p <<EOF
+DROP USER IF EXISTS 'daniel_clases'@'localhost';
+CREATE USER 'daniel_clases'@'localhost' IDENTIFIED BY 'lanza.pass';
+CREATE DATABASE IF NOT EXISTS zonzamas;
+GRANT ALL PRIVILEGES ON zonzamas.* TO 'daniel_clases'@'localhost';
+FLUSH PRIVILEGES;
+EXIT;
+EOF
+
+# 2. Verificar .env
+cd /var/www/html/cifpzonzamas.lan
+cat .env | grep DB_
+
+# 3. Limpiar todo
+php artisan optimize:clear
+
+# 4. Probar
+php artisan migrate --seed
+¿Qué mensaje te da cuando ejecutas el script de prueba (paso 6)? Eso nos dirá exactamente qué permiso falta.
+> -- 1. Verificar si el usuario existe
+mysql> SELECT user, host FROM mysql.user WHERE user = 'daniel_clases';
+ERROR 1142 (42000): SELECT command denied to user 'daniel_clases'@'localhost' for table 'user'
+mysql> 
+mysql> -- 2. Si existe, ELIMINARLO para empezar limpio
+mysql> DROP USER IF EXISTS 'daniel_clases'@'localhost';
+ERROR 1227 (42000): Access denied; you need (at least one of) the CREATE USER privilege(s) for this operation
+mysql> 
+mysql> -- 3. Crear usuario NUEVO con la contraseña correcta
+mysql> CREATE USER 'daniel_clases'@'localhost' IDENTIFIED BY 'lanza.pass';
+ERROR 1227 (42000): Access denied; you need (at least one of) the CREATE USER privilege(s) for this operation
+mysql> 
+mysql> -- 4. Crear base de datos si no existe
+mysql> CREATE DATABASE IF NOT EXISTS zonzamas 
+    -> CHARACTER SET utf8mb4 
+    -> COLLATE utf8mb4_unicode_ci;
+ERROR 1044 (42000): Access denied for user 'daniel_clases'@'localhost' to database 'zonzamas'
+mysql> 
+mysql> -- 5. Dar TODOS los permisos (esto incluye INSERT, UPDATE, DELETE)
+mysql> GRANT ALL PRIVILEGES ON zonzamas.* TO 'daniel_clases'@'localhost';
+ERROR 1044 (42000): Access denied for user 'daniel_clases'@'localhost' to database 'zonzamas'
+mysql> 
+mysql> -- 6. Opcional: Dar permisos para crear bases de datos temporales
+mysql> GRANT CREATE TEMPORARY TABLES ON zonzamas.* TO 'daniel_clases'@'localhost';
+ERROR 1044 (42000): Access denied for user 'daniel_clases'@'localhost' to database 'zonzamas'
+mysql> 
+mysql> -- 7. Aplicar cambios inmediatamente
+mysql> FLUSH PRIVILEGES;
+ERROR 1227 (42000): Access denied; you need (at least one of) the RELOAD privilege(s) for this operation
+mysql> 
+mysql> -- 8. Verificar los permisos otorgados
+mysql> SHOW GRANTS FOR 'daniel_clases'@'localhost';
++--------------------------------------------------------------------+
+| Grants for daniel_clases@localhost                                 |
++--------------------------------------------------------------------+
+| GRANT USAGE ON *.* TO `daniel_clases`@`localhost`                  |
+| GRANT ALL PRIVILEGES ON `laravel`.* TO `daniel_clases`@`localhost` |
++--------------------------------------------------------------------+
+2 rows in set (0,00 sec)
+
+mysql> 
+mysql> -- 9. Salir
+¡Ah! El problema está claro. Estás ejecutando los comandos MySQL como el usuario daniel_clases, no como root. Los comandos DROP USER, CREATE USER, y GRANT requieren privilegios de administrador.
+Solución CORRECTA:
+1. Acceder como ROOT (administrador)
+bash
+# Esto es CRÍTICO: debes usar sudo
+sudo mysql -u root
+O si root tiene contraseña:
+bash
+sudo mysql -u root -p
+(Introduce la contraseña de root de MySQL cuando te lo pida)
+2. Ejecutar los comandos como ROOT:
+sql
+-- Conectar como root primero
+-- mysql> (aquí ya deberías estar como root)
+
+-- 1. Eliminar el usuario existente (si existe)
+DROP USER IF EXISTS 'daniel_clases'@'localhost';
+
+-- 2. Crear usuario NUEVO
+CREATE USER 'daniel_clases'@'localhost' IDENTIFIED BY 'lanza.pass';
+
+-- 3. Crear base de datos
+CREATE DATABASE IF NOT EXISTS zonzamas 
+CHARACTER SET utf8mb4 
+COLLATE utf8mb4_unicode_ci;
+
+-- 4. Dar TODOS los privilegios en esa base de datos
+GRANT ALL PRIVILEGES ON zonzamas.* TO 'daniel_clases'@'localhost';
+
+-- 5. Aplicar cambios
+FLUSH PRIVILEGES;
+
+-- 6. Verificar
+SHOW GRANTS FOR 'daniel_clases'@'localhost';
+3. Script completo en una línea:
+bash
+sudo mysql -u root << 'MYSQL_SCRIPT'
+DROP USER IF EXISTS 'daniel_clases'@'localhost';
+CREATE USER 'daniel_clases'@'localhost' IDENTIFIED BY 'lanza.pass';
+CREATE DATABASE IF NOT EXISTS zonzamas CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+GRANT ALL PRIVILEGES ON zonzamas.* TO 'daniel_clases'@'localhost';
+FLUSH PRIVILEGES;
+SHOW GRANTS FOR 'daniel_clases'@'localhost';
+MYSQL_SCRIPT
+4. Después de configurar MySQL, verificar .env:
+bash
+cd /var/www/html/cifpzonzamas.lan
+cat .env | grep -E "DB_|DATABASE"
+Debería mostrar:
+text
+DB_CONNECTION=mysql
+DB_HOST=127.0.0.1
+DB_PORT=3306
+DB_DATABASE=zonzamas
+DB_USERNAME=daniel_clases
+DB_PASSWORD=lanza.pass
+5. Probar la conexión:
+bash
+# Probar desde línea de comandos
+mysql -u daniel_clases -planza.pass -e "SHOW DATABASES;"
+
+# Probar acceso específico a zonzamas
+mysql -u daniel_clases -planza.pass -D zonzamas -e "SHOW TABLES;"
+6. Limpiar caché de Laravel:
+bash
+php artisan config:clear
+php artisan cache:clear
+php artisan route:clear
+php artisan view:clear
+7. Ejecutar migraciones:
+bash
+# Primero probar una migración simple
+php artisan migrate:install
+
+# Si funciona, ejecutar todas
+php artisan migrate
+
+# Luego los seeders
+php artisan db:seed
+¿Cómo saber si estás como root en MySQL?
+Cuando entras a MySQL, fíjate en el prompt:
+mysql> = Usuario normal (probablemente daniel_clases)
+MariaDB [(none)]> o similar = Root
+Si root tiene contraseña y no la sabes:
+bash
+# Opción 1: Resetear contraseña de root MySQL
+sudo mysql --defaults-file=/etc/mysql/debian.cnf
+
+# Opción 2: Entrar sin autenticación (si es posible)
+sudo mysql -u root --skip-password
+
+# Opción 3: Usar el archivo debian.cnf (en Ubuntu)
+sudo cat /etc/mysql/debian.cnf
+# Usa el usuario y password que aparecen ahí
+Ejecuta PRIMERO el comando sudo mysql -u root y luego los comandos SQL. ¡El sudo es esencial!
+mysql> -- Conectar como root primero
+mysql> -- mysql> (aquí ya deberías estar como root)
+mysql> 
+mysql> -- 1. Eliminar el usuario existente (si existe)
+mysql> DROP USER IF EXISTS 'daniel_clases'@'localhost';
+Query OK, 0 rows affected (0,01 sec)
+
+mysql> 
+mysql> -- 2. Crear usuario NUEVO
+mysql> CREATE USER 'daniel_clases'@'localhost' IDENTIFIED BY 'lanza.pass';
+Query OK, 0 rows affected (0,01 sec)
+
+mysql> 
+mysql> -- 3. Crear base de datos
+mysql> CREATE DATABASE IF NOT EXISTS zonzamas 
+    -> CHARACTER SET utf8mb4 
+    -> COLLATE utf8mb4_unicode_ci;
+Query OK, 1 row affected, 1 warning (0,01 sec)
+
+mysql> 
+mysql> -- 4. Dar TODOS los privilegios en esa base de datos
+mysql> GRANT ALL PRIVILEGES ON zonzamas.* TO 'daniel_clases'@'localhost';
+Query OK, 0 rows affected (0,00 sec)
+
+mysql> 
+mysql> -- 5. Aplicar cambios
+mysql> FLUSH PRIVILEGES;
+Query OK, 0 rows affected (0,01 sec)
+
+mysql> 
+mysql> -- 6. Verificar
+mysql> SHOW GRANTS FOR 'daniel_clases'@'localhost';
++---------------------------------------------------------------------+
+| Grants for daniel_clases@localhost                                  |
++---------------------------------------------------------------------+
+| GRANT USAGE ON *.* TO `daniel_clases`@`localhost`                   |
+| GRANT ALL PRIVILEGES ON `zonzamas`.* TO `daniel_clases`@`localhost` |
++---------------------------------------------------------------------+
+2 rows in set (0,00 sec)
+
+mysql>
+¡Perfecto! ✅ Ahora el usuario daniel_clases tiene todos los privilegios sobre la base de datos zonzamas.
+Ahora continúa con Laravel:
+1. Verifica que el archivo .env tiene la configuración correcta:
+bash
+cd /var/www/html/cifpzonzamas.lan
+cat .env | grep -E "DB_|DATABASE"
+Debe mostrar:
+text
+DB_CONNECTION=mysql
+DB_HOST=127.0.0.1
+DB_PORT=3306
+DB_DATABASE=zonzamas
+DB_USERNAME=daniel_clases
+DB_PASSWORD=lanza.pass
+Si no es así, edítalo:
+bash
+nano .env
+2. Limpia TODO el caché de Laravel:
+bash
+php artisan config:clear
+php artisan cache:clear
+php artisan route:clear
+php artisan view:clear
+php artisan optimize:clear
+3. Prueba la conexión manualmente:
+bash
+# Probar con PHP directamente
+php -r "
+try {
+    \$pdo = new PDO('mysql:host=127.0.0.1;dbname=zonzamas', 'daniel_clases', 'lanza.pass');
+    echo '✅ Conexión MySQL exitosa\n';
+    
+    // Probar crear tabla
+    \$pdo->exec('CREATE TABLE IF NOT EXISTS test_conexion (id INT)');
+    echo '✅ CREATE TABLE funciona\n';
+    
+    // Probar INSERT
+    \$pdo->exec('INSERT INTO test_conexion VALUES (1)');
+    echo '✅ INSERT funciona\n';
+    
+    // Probar SELECT
+    \$stmt = \$pdo->query('SELECT * FROM test_conexion');
+    echo '✅ SELECT funciona - ' . \$stmt->rowCount() . ' filas\n';
+    
+    // Limpiar
+    \$pdo->exec('DROP TABLE test_conexion');
+    echo '✅ DROP TABLE funciona\n';
+    
+} catch (PDOException \$e) {
+    echo '❌ Error: ' . \$e->getMessage() . '\n';
+}
+"
+4. Ejecuta las migraciones PASO A PASO:
+bash
+# 1. Primero solo crear la tabla de migraciones
+php artisan migrate:install
+
+# Debería mostrar: "Migration table created successfully."
+
+# 2. Verificar estado
+php artisan migrate:status
+
+# 3. Ejecutar TODAS las migraciones
+php artisan migrate
+
+# 4. Ejecutar los seeders
+php artisan db:seed
+
+# O todo en un comando (si estás seguro)
+php artisan migrate --seed
+5. Si aún hay problemas, prueba con:
+bash
+# Forzar recreación de tablas
+php artisan migrate:fresh --seed
+
+# O resetear completamente
+php artisan migrate:refresh --seed
+6. Verifica que todo funciona:
+bash
+# Iniciar servidor de desarrollo
+php artisan serve
+
+# En otra terminal, probar la aplicación
+curl http://localhost:8000
+7. Solución para error persistente con sesiones:
+Si ves error relacionado con la tabla sessions, ejecuta:
+bash
+# Crear migración de sesiones
+php artisan session:table
+
+# Ejecutar esa migración específica
+php artisan migrate --path=database/migrations/2024_*_create_sessions_table.php
+Resumen de comandos finales:
+bash
+# 1. Ir al proyecto
+cd /var/www/html/cifpzonzamas.lan
+
+# 2. Verificar .env
+cat .env | grep DB_
+
+# 3. Limpiar caché
+php artisan optimize:clear
+
+# 4. Ejecutar migraciones y seeders
+php artisan migrate --seed
+
+# 5. Iniciar servidor
+php artisan serve
+¿Qué mensaje obtienes ahora al ejecutar php artisan migrate --seed?
+SQLSTATE[23000]: Integrity constraint violation: 1062 Duplicate entry 'test@example.com' for key 'users.users_email_unique' (Connection: mysql, Host: 127.0.0.1, Port: 3306, Database: zonzamas, SQL: insert into `users` (`name`, `email`, `email_verified_at`, `password`, `remember_token`, `updated_at`, `created_at`) values (Test User, test@example.com, 2026-02-03 11:54:02, $2y$12$/ZuqYxfCfQhkgUyIoGoK..2qNKULunASVyP9WGwPtDTVOTBFVFsu., ZsB7enWnZ8, 2026-02-03 11:54:02, 2026-02-03 11:54:02))
+
+  at vendor/laravel/framework/src/Illuminate/Database/Connection.php:831
+    827▕             $exceptionType = $this->isUniqueConstraintError($e)
+    828▕                 ? UniqueConstraintViolationException::class
+    829▕                 : QueryException::class;
+    830▕ 
+  ➜ 831▕             throw new $exceptionType(
+    832▕                 $this->getNameWithReadWriteType(),
+    833▕                 $query,
+    834▕                 $this->prepareBindings($bindings),
+    835▕                 $e,
+
+      +16 vendor frames 
+
+  17  database/seeders/DatabaseSeeder.php:27
+      Illuminate\Database\Eloquent\Factories\Factory::create()
+      +39 vendor frames 
+
+  57  artisan:16
+      Illuminate\Foundation\Application::handleCommand()
+¡Excelente! El problema de permisos ya está resuelto. Ahora el error es diferente: duplicado de email. Esto significa que:
+✅ MySQL está configurado correctamente (los permisos funcionan)
+✅ Las migraciones se ejecutaron (las tablas existen)
+❌ El seeder está intentando insertar un usuario que ya existe
+Soluciones:
+Opción 1: Limpiar la base de datos y empezar de cero (Recomendado)
+bash
+# 1. Limpiar TODAS las tablas
+php artisan migrate:fresh --seed
+
+# Esto borrará todas las tablas y las recreará con datos de prueba
+Opción 2: Usar firstOrCreate en el seeder (Modificar código)
+bash
+# Editar el archivo del seeder
+nano database/seeders/DatabaseSeeder.php
+Busca la línea que crea el usuario y cámbiala por:
+php
+\App\Models\User::firstOrCreate(
+    ['email' => 'test@example.com'],
+    [
+        'name' => 'Test User',
+        'password' => bcrypt('password'),
+        'email_verified_at' => now(),
+    ]
+);
+Luego ejecuta:
+bash
+php artisan db:seed
+Opción 3: Eliminar los datos existentes manualmente
+bash
+# Acceder a MySQL
+mysql -u daniel_clases -planza.pass -D zonzamas
+
+-- En MySQL, eliminar el usuario duplicado
+DELETE FROM users WHERE email = 'test@example.com';
+
+-- Salir
+EXIT;
+
+-- Luego ejecutar seeders
+php artisan db:seed
+Opción 4: Usar truncate antes de seeders (En el seeder)
+Edita database/seeders/DatabaseSeeder.php:
+php
+public function run(): void
+{
+    // Limpiar tabla antes de insertar
+    \App\Models\User::truncate();
+    
+    // Crear usuario
+    \App\Models\User::factory()->create([
+        'name' => 'Test User',
+        'email' => 'test@example.com',
+    ]);
+    
+    // Otros seeders...
+}
+Opción 5: Solución rápida desde terminal
+bash
+# 1. Limpiar solo la tabla users
+mysql -u daniel_clases -planza.pass -D zonzamas -e "TRUNCATE TABLE users;"
+
+# 2. Ejecutar seeders
+php artisan db:seed
+
+# O en un solo comando
+mysql -u daniel_clases -planza.pass -D zonzamas -e "TRUNCATE TABLE users;" && php artisan db:seed
+Comandos recomendados:
+Para desarrollo, usa esto:
+bash
+# SOLUCIÓN MÁS SEGURA: Refrescar todo
+php artisan migrate:fresh --seed
+
+# Verificar que se creó el usuario
+mysql -u daniel_clases -planza.pass -D zonzamas -e "SELECT id, name, email FROM users;"
+Si solo quieres resetear los seeders:
+bash
+# 1. Vaciar tablas que tienen seeders
+mysql -u daniel_clases -planza.pass -D zonzamas -e "
+SET FOREIGN_KEY_CHECKS = 0;
+TRUNCATE TABLE users;
+TRUNCATE TABLE personal_access_tokens;
+TRUNCATE TABLE password_reset_tokens;
+TRUNCATE TABLE failed_jobs;
+TRUNCATE TABLE jobs;
+TRUNCATE TABLE job_batches;
+TRUNCATE TABLE sessions;
+SET FOREIGN_KEY_CHECKS = 1;
+"
+
+# 2. Ejecutar seeders
+php artisan db:seed
+Verificar el estado actual:
+bash
+# Ver qué usuarios hay en la base de datos
+mysql -u daniel_clases -planza.pass -D zonzamas -e "SELECT COUNT(*) as total_users FROM users;"
+
+# Ver todas las tablas
+mysql -u daniel_clases -planza.pass -D zonzamas -e "SHOW TABLES;"
+Resumen:
+El error de permisos ✅ SOLUCIONADO
+Ahora es un problema de datos duplicados
+Usa php artisan migrate:fresh --seed para empezar limpio
+¿Qué prefieres hacer?
+migrate:fresh (borra todo y recrea) → Recomendado para desarrollo
+Solo limpiar la tabla users y re-ejecutar seeders
+Modificar el seeder para evitar duplicados
+
